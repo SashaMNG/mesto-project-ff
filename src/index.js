@@ -1,13 +1,13 @@
-import { initialCards } from './components/cards'
-import './pages/index.css'
-import { openModal, closeModal } from './components/modal'
 import { addCard, deleteCard, likeCard } from './components/card'
+import { initialCards } from './components/cards'
+import { closeModal, openModal } from './components/modal'
+import './pages/index.css'
 
-// в файле index.js описана инициализация приложения и основная логика страницы: 
-// - поиск DOM-элементов на странице и навешивание на них обработчиков событий; 
-// - обработчики отправки форм, 
-// - функция-обработчик события открытия модального окна для редактирования профиля; 
-// - функция открытия модального окна изображения карточки. 
+// в файле index.js описана инициализация приложения и основная логика страницы:
+// - поиск DOM-элементов на странице и навешивание на них обработчиков событий;
+// - обработчики отправки форм,
+// - функция-обработчик события открытия модального окна для редактирования профиля;
+// - функция открытия модального окна изображения карточки.
 // Также в index.js находится код, который отвечает за отображение шести карточек при открытии страницы.
 
 const cardList = document.querySelector('.places__list')
@@ -17,10 +17,15 @@ const cardTemplate = document.querySelector('#card-template').content
 const editPopup = document.querySelector('.popup_type_edit')
 const editButton = document.querySelector('.profile__edit-button')
 
+const profileTitle = document.querySelector('.profile__title')
+const profileDescription = document.querySelector('.profile__description')
+const nameInput = document.querySelector('input[name="name"]')
+const jobInput = document.querySelector('input[name="description"]')
+
 editButton.addEventListener('click', evt => {
 	evt.stopPropagation()
-	// nameInput.value = profileTitle.textContent
-	// jobInput.value = profileDescription.textContent
+	nameInput.value = profileTitle.textContent
+	jobInput.value = profileDescription.textContent
 	openModal(editPopup)
 })
 
@@ -31,7 +36,7 @@ addButton.addEventListener('click', evt => {
 	openModal(addCardPopup)
 })
 
-// - функция открытия модального окна изображения карточки. 
+// функция открытия модального окна изображения карточки.
 function openImgModal(img) {
 	const modalTypeImg = document.querySelector('.popup_type_image')
 	const modalImg = modalTypeImg.querySelector('.popup__image')
@@ -50,35 +55,48 @@ closeButtons.forEach(button => {
 	})
 })
 
-// // ФОРМЫ
-// // - обработчик отправки формы редактирования профиля
-// // Находим форму в DOM
-// const formElement = document.querySelector('form[name="edit-profile"]')
-// // Находим поля формы в DOM
-// const nameInput = document.querySelector('input[name="name"]')
-// const jobInput = document.querySelector('input[name="description"]')
+// обработчик отправки формы редактирования профиля, хотя пока она никуда отправляться не будет
+const formEditProfile = document.querySelector('form[name="edit-profile"]')
 
-// Обработчик «отправки» формы, хотя пока она никуда отправляться не будет
-// function handleFormSubmit(evt) {
-// 	evt.preventDefault()
-// 	// Получите значение полей jobInput и nameInput из свойства value
-// 	const nameValue = nameInput.value
-// 	const descriptionValue = jobInput.value
-// 	// // Выберите элементы, куда должны быть вставлены значения полей
-// 	const profileTitle = document.querySelector('.profile__title')
-// 	const profileDescription = document.querySelector('.profile__description')
-// 	// Вставьте новые значения с помощью textContent
-// 	profileTitle.textContent = nameValue
-// 	profileDescription.textContent = descriptionValue
+function handleFormSubmit(evt) {
+	evt.preventDefault()
+	const nameValue = nameInput.value
+	const descriptionValue = jobInput.value
 
-// 	// formElement.reset();
-// }
+	profileTitle.textContent = nameValue
+	profileDescription.textContent = descriptionValue
+	closeModal(editPopup)
+	formEditProfile.reset()
+}
 
-// // Прикрепляем обработчик к форме: он будет следить за событием “submit” - «отправка»
-// formElement.addEventListener('submit', handleFormSubmit)
+formEditProfile.addEventListener('submit', handleFormSubmit)
 
+// функция добавления новой карточки в начало страницы
+const formNewPlace = document.querySelector('form[name="new-place"]')
+const namePlaceInput = document.querySelector('input[name="place-name"]')
+const linkInput = document.querySelector('input[name="link"]')
 
+function handleImgSubmit(evt, ul, template) {
+	evt.preventDefault()
+	const namePlaceValue = namePlaceInput.value
+	const linkValue = linkInput.value
+
+	const newCardObj = {
+		name: namePlaceValue,
+		link: linkValue,
+	}
+	ul.prepend(addCard(template, newCardObj, deleteCard, likeCard, openImgModal))
+}
+
+formNewPlace.addEventListener('submit', evt => {
+	evt.stopPropagation()
+	handleImgSubmit(evt, cardList, cardTemplate)
+	closeModal(addCardPopup)
+	formNewPlace.reset()
+})
 
 initialCards.forEach(function (item) {
-	cardList.append(addCard(cardTemplate, item, deleteCard, likeCard, openImgModal))
+	cardList.append(
+		addCard(cardTemplate, item, deleteCard, likeCard, openImgModal)
+	)
 })

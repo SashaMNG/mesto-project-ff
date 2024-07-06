@@ -8,6 +8,7 @@
 // открытие попапов openModal
 function openModal(popup) {
 	popup.classList.add('popup_is-opened')
+	popup.classList.add('popup_is-animated')
 	popup.addEventListener('click', handleClickOverlay)
 	document.addEventListener('keydown', handlePressEsc)
 }

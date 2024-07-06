@@ -1,8 +1,8 @@
-// в файле card.js описаны функции для работы с карточками: 
-// функция создания карточки, 
+// в файле card.js описаны функции для работы с карточками:
+// функция создания карточки,
 // функции-обработчики событий удаления и лайка карточки;
 
- function addCard(cardTemplate, card, deleteCard, likeCard, openImgModal) {
+function addCard(cardTemplate, card, deleteCard, likeCard, openImgModal) {
 	const cardElement = cardTemplate
 		.querySelector('.places__item')
 		.cloneNode(true)
@@ -12,10 +12,10 @@
 	cardImage.alt = card.name
 	cardElement.querySelector('.card__title').textContent = card.name
 
-  cardImage.addEventListener('click', evt => {
-    evt.stopPropagation()
-  openImgModal(cardImage)
-  })
+	cardImage.addEventListener('click', evt => {
+		evt.stopPropagation()
+		openImgModal(cardImage)
+	})
 
 	const deleteButton = cardElement.querySelector('.card__delete-button')
 	deleteButton.addEventListener('click', evt => {

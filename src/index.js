@@ -13,7 +13,7 @@ import './pages/index.css'
 const cardList = document.querySelector('.places__list')
 const cardTemplate = document.querySelector('#card-template').content
 
-// - функция-обработчик события открытия модального окна для редактирования профиля
+// функция-обработчик события открытия модального окна для редактирования профиля
 const editPopup = document.querySelector('.popup_type_edit')
 const editButton = document.querySelector('.profile__edit-button')
 
@@ -37,12 +37,13 @@ addButton.addEventListener('click', evt => {
 })
 
 // функция открытия модального окна изображения карточки.
+const modalTypeImg = document.querySelector('.popup_type_image')
+const modalImg = modalTypeImg.querySelector('.popup__image')
+const modalCaption = modalTypeImg.querySelector('.popup__caption')
+
 function openImgModal(img) {
-	const modalTypeImg = document.querySelector('.popup_type_image')
-	const modalImg = modalTypeImg.querySelector('.popup__image')
 	modalImg.src = img.src
 	modalImg.alt = img.alt
-	const modalCaption = modalTypeImg.querySelector('.popup__caption')
 	modalCaption.textContent = img.alt
 	openModal(modalTypeImg)
 }
@@ -58,7 +59,7 @@ closeButtons.forEach(button => {
 // обработчик отправки формы редактирования профиля, хотя пока она никуда отправляться не будет
 const formEditProfile = document.querySelector('form[name="edit-profile"]')
 
-function handleFormSubmit(evt) {
+function handleFormEditSubmit(evt) {
 	evt.preventDefault()
 	const nameValue = nameInput.value
 	const descriptionValue = jobInput.value
@@ -69,7 +70,7 @@ function handleFormSubmit(evt) {
 	formEditProfile.reset()
 }
 
-formEditProfile.addEventListener('submit', handleFormSubmit)
+formEditProfile.addEventListener('submit', handleFormEditSubmit)
 
 // функция добавления новой карточки в начало страницы
 const formNewPlace = document.querySelector('form[name="new-place"]')

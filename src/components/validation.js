@@ -1,15 +1,104 @@
-// Валидируйте форму «Редактировать профиль». 
-// Для этого заготовьте элементы ошибок по макету в «Фигме». Если поле формы «Редактировать профиль» не прошло валидацию, под ним должен появиться красный текст ошибки. 
-// Настройки валидации такие: 
-// Оба поля обязательные. 
-// В поле «Имя» должно быть от 2 до 40 символов. 
-// В поле «О себе» должно быть от 2 до 200 символов. 
-// Оба поля могут содержать только латинские и кириллические буквы, знаки дефиса и пробелы. Это нужно проверить с помощью регулярных выражений и вывести кастомное сообщение об ошибке. 
-// Во всех остальных случаях используйте стандартные браузерные тексты ошибок. 
-// Если хотя бы одно из полей не прошло валидацию, кнопка «Сохранить» должна быть неактивной. Если оба поля прошли — активной. Цвета неактивных кнопок возьмите из макета. 
-// Важно: при открытии модального окна редактирования профиля в поля формы подставляются валидные данные пользователя. Если открыть модальное окно редактирования профиля, ввести невалидные данные в поля ввода и закрыть окно, то при повторном открытии и заполнении данных формы профиля необходимо вызвать очистку ошибок валидации, которые могли остаться с прошлого открытия.
+// Функция, которая добавляет класс с ошибкой
+const showInputError = (
+	formElement,
+	inputElement,
+	errorMessage,
+	validationConfig
+) => {
+	const errorElement = formElement.querySelector(`.${inputElement.id}-error`)
+	inputElement.classList.add(validationConfig.inputErrorClass)
+	errorElement.textContent = errorMessage
+	errorElement.classList.add(validationConfig.errorClass)
+}
 
-//Сделайте функцию enableValidation ответственной за включение валидации всех форм.
+// Функция, которая удаляет класс с ошибкой
+const hideInputError = (formElement, inputElement, validationConfig) => {
+	const errorElement = formElement.querySelector(`.${inputElement.id}-error`)
+	inputElement.classList.remove(validationConfig.inputErrorClass)
+	errorElement.classList.remove(validationConfig.errorClass)
+	errorElement.textContent = ''
+}
 
-//Используйте функцию clearValidation при заполнении формы профиля во время её открытия и при очистке формы добавления карточки. Вынесите функциональность валидации форм в файл validation.js. Чтобы было чуточку понятнее — пример выше, вызов функций enableValidation и clearValidation должен находиться в файле index.js. А все другие функции, включая декларирование функции enableValidation и валидации форм, — в отдельном файле validation.js.
+// Функция, которая проверяет валидность поля
+const checkInputValidity = (formElement, inputElement, validationConfig) => {
+	if (inputElement.validity.patternMismatch) {
+		// встроенный метод setCustomValidity принимает на вход строку
+		// и заменяет ею стандартное сообщение об ошибке
+		inputElement.setCustomValidity(inputElement.dataset.errorMessage)
+	} else {
+		// если передать пустую строку, то будут доступны стандартные браузерные сообщения
+		inputElement.setCustomValidity('')
+	}
+	if (!inputElement.validity.valid) {
+		// теперь, если ошибка вызвана регулярным выражением, переменная validationMessage хранит наше кастомное сообщение
+		showInputError(
+			formElement,
+			inputElement,
+			inputElement.validationMessage,
+			validationConfig
+		)
+	} else {
+		// Если проходит, скроем
+		hideInputError(formElement, inputElement, validationConfig)
+	}
+}
 
+const hasInvalidInput = inputList => {
+	return inputList.some(inputElement => {
+		return !inputElement.validity.valid
+	})
+}
+
+// функция, которая отвечает за блокировку кнопки «Отправить»
+const toggleButtonState = (inputList, buttonElement, validationConfig) => {
+	if (hasInvalidInput(inputList)) {
+		buttonElement.disabled = true
+		buttonElement.classList.add(validationConfig.inactiveButtonClass)
+	} else {
+		buttonElement.disabled = false
+		buttonElement.classList.remove(validationConfig.inactiveButtonClass)
+	}
+}
+
+const setEventListeners = (formElement, validationConfig) => {
+	const inputList = Array.from(
+		formElement.querySelectorAll(validationConfig.inputSelector)
+	)
+	const buttonElement = formElement.querySelector(
+		validationConfig.submitButtonSelector
+	)
+	toggleButtonState(inputList, buttonElement, validationConfig)
+
+	inputList.forEach(inputElement => {
+		inputElement.addEventListener('input', () => {
+			checkInputValidity(formElement, inputElement, validationConfig)
+			toggleButtonState(inputList, buttonElement, validationConfig)
+		})
+	})
+}
+
+const enableValidation = validationConfig => {
+	const formList = Array.from(
+		document.querySelectorAll(validationConfig.formSelector)
+	)
+
+	formList.forEach(formElement => {
+		setEventListeners(formElement, validationConfig)
+	})
+}
+
+const clearValidation = (formElement, validationConfig) => {
+	const inputList = Array.from(
+		formElement.querySelectorAll(validationConfig.inputSelector)
+	)
+	const buttonElement = formElement.querySelector(
+		validationConfig.submitButtonSelector
+	)
+
+	inputList.forEach(inputElement => {
+		hideInputError(formElement, inputElement, validationConfig)
+	})
+	toggleButtonState(inputList, buttonElement, validationConfig)
+}
+
+export { clearValidation, enableValidation }

@@ -1,10 +1,16 @@
 .popup__form {
-  margin-top: 27px;
+	margin-top: 54px;
 }
 
-.popup__fieldset {
-  border: none;
-  padding: 0;
-  margin: 0;
+.popup__label {
+	height: 46px;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	border: none;
+	margin-bottom: 10px;
 }
 
+.popup__label:last-of-type {
+	margin-bottom: 0;
+}

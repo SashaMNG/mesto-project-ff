@@ -42,22 +42,21 @@
         <h3 class="popup__title">Редактировать профиль</h3>
 
         <form class="popup__form" name="edit-profile" novalidate>
-          <fieldset class="popup__fieldset">
-            <label class="popup__label popup__label_type_name">
-              <input id="name-input" type="text" name="name" class="popup__input 
+
+          <div class="popup__label">
+            <input id="name-input" type="text" name="name" class="popup__input 
           popup__input_type_name" placeholder="Имя" minlength="2" maxlength="40" pattern="^[а-яА-Яa-zA-ZЁё\-\s]+$"
-                data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы" required>
-              <span class="popup__input_message-error name-input-error"></span>
-            </label>
-            <label class="popup__label popup__label_type_description">
-              <input id="description-input" type="text" name="description" class="popup__input 
+              data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы" required>
+            <span class="popup__input_message-error name-input-error"></span>
+          </div>
+          <div class="popup__label">
+            <input id="description-input" type="text" name="description" class="popup__input 
           popup__input_type_description" placeholder="Занятие" minlength="2" maxlength="200"
-                pattern="^[а-яА-Яa-zA-ZЁё\-\s]+$"
-                data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы" required>
-              <span class="popup__input_message-error description-input-error"></span>
-            </label>
-            <button type="submit" class="button popup__button">Сохранить</button>
-          </fieldset>
+              pattern="^[а-яА-Яa-zA-ZЁё\-\s]+$"
+              data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы" required>
+            <span class="popup__input_message-error description-input-error"></span>
+          </div>
+          <button type="submit" class="button popup__button">Сохранить</button>
         </form>
       </div>
     </div>
@@ -67,21 +66,19 @@
         <h3 class="popup__title">Новое место</h3>
 
         <form class="popup__form" name="new-place">
-          <fieldset class="popup__fieldset">
-            <label class="popup__label popup__label_type_card-name">
-              <input type="text" id="place-name-input" name="place-name"
-                class="popup__input popup__input_type_card-name" placeholder="Название" minlength="2" maxlength="30"
-                pattern="^[а-яА-Яa-zA-ZЁё\-\s]+$"
-                data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы" required>
-              <span class="popup__input_message-error place-name-input-error"></span>
-            </label>
-            <label class="popup__label popup__label_type_url"></label>
-            <input type="url" id="url-input" name="link" class="popup__input popup__input_type_url"
-              placeholder="Ссылка на картинку" required>
-            <span class="popup__input_message-error url-input-error"></span>
-            </label>
-            <button type="submit" class="button popup__button">Сохранить</button>
-          </fieldset>
+          <div class="popup__label">
+            <input type="text" id="place-name-input" name="place-name" class="popup__input popup__input_type_card-name"
+              placeholder="Название" minlength="2" maxlength="30" pattern="^[а-яА-Яa-zA-ZЁё\-\s]+$"
+              data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы" required>
+            <span class="popup__input_message-error place-name-input-error"></span>
+          </div>
+          <div class="popup__label">
+          <input type="url" id="url-input" name="link" class="popup__input popup__input_type_url"
+            placeholder="Ссылка на картинку" required>
+          <span class="popup__input_message-error url-input-error"></span>
+        </div>
+          <button type="submit" class="button popup__button">Сохранить</button>
+
         </form>
       </div>
     </div>

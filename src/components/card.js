@@ -1,7 +1,3 @@
-// в файле card.js описаны функции для работы с карточками:
-// функция создания карточки,
-// функции-обработчики событий удаления и лайка карточки;
-
 function addCard(cardTemplate, card, deleteCard, likeCard, openImgModal) {
 	const cardElement = cardTemplate
 		.querySelector('.places__item')

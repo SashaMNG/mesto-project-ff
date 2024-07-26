@@ -52,6 +52,11 @@ const validationConfig = {
 // включение валидации всех форм
 enableValidation(validationConfig)
 
+// getInitialCards()
+// getIdUsers()
+// addNewCard()
+// editedUserData()
+
 // ФОРМА РЕДАКТИРОВАНИЯ ПРОФИЛЯ
 // функция-обработчик события открытия модального окна для редактирования профиля
 editButton.addEventListener('click', evt => {

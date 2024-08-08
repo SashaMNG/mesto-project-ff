@@ -16,8 +16,7 @@
     </header>
     <main class="content">
       <section class="profile page__section">
-        <div class="profile__image" style="background-image: url('<%=require('./images/avatar.jpg')%>')"></div>
-
+        <div class="profile__image"></div>
         <div class="profile__info">
           <h1 class="profile__title">Жак-Ив Кусто</h1>
           <button class="profile__edit-button" type="button"></button>
@@ -36,13 +35,29 @@
         © 2021 Mesto Russia
       </p>
     </footer>
+    <!-- попап для смены аватара  -->
+    <div class="popup popup_type_avatar">
+      <div class="popup__content popup__content_avatar">
+        <button type="button" class="popup__close"></button>
+        <h3 class="popup__title">Обновить аватар</h3>
+
+        <form class="popup__form" name="avatar" novalidate>
+          <div class="popup__label">
+            <input type="url" id="avatar-input" name="avatar" class="popup__input popup__input_type_avatar"
+              placeholder="Ссылка на новый аватар" required>
+            <span class="popup__input_message-error avatar-input-error"></span>
+          </div>
+          <button type="submit" class="button popup__button">Сохранить</button>
+        </form>
+      </div>
+    </div>
+    <!-- попап для редактирования данных о пользователе  -->
     <div class="popup popup_type_edit">
       <div class="popup__content">
         <button type="button" class="popup__close"></button>
         <h3 class="popup__title">Редактировать профиль</h3>
 
         <form class="popup__form" name="edit-profile" novalidate>
-
           <div class="popup__label">
             <input id="name-input" type="text" name="name" class="popup__input 
           popup__input_type_name" placeholder="Имя" minlength="2" maxlength="40" pattern="^[а-яА-Яa-zA-ZЁё\-\s]+$"
@@ -60,6 +75,7 @@
         </form>
       </div>
     </div>
+    <!-- попап для добавления новой карточки  -->
     <div class="popup popup_type_new-card">
       <div class="popup__content">
         <button type="button" class="popup__close"></button>
@@ -73,15 +89,23 @@
             <span class="popup__input_message-error place-name-input-error"></span>
           </div>
           <div class="popup__label">
-          <input type="url" id="url-input" name="link" class="popup__input popup__input_type_url"
-            placeholder="Ссылка на картинку" required>
-          <span class="popup__input_message-error url-input-error"></span>
-        </div>
+            <input type="url" id="url-input" name="link" class="popup__input popup__input_type_url"
+              placeholder="Ссылка на картинку" required>
+            <span class="popup__input_message-error url-input-error"></span>
+          </div>
           <button type="submit" class="button popup__button">Сохранить</button>
-
         </form>
       </div>
     </div>
+    <!-- попап для удаления карточки  -->
+    <div class="popup popup_type_delete-card">
+      <div class="popup__content popup__content_delete-card">
+        <button type="button" class="popup__close"></button>
+        <h3 class="popup__title">Вы уверены?</h3>
+        <button type="submit" class="button popup__button popup__button_delete-card">Да</button>
+      </div>
+    </div>
+
     <div class="popup popup_type_image">
       <div class="popup__content popup__content_content_image">
         <button type="button" class="popup__close"></button>
@@ -90,8 +114,6 @@
       </div>
     </div>
   </div>
-  <!-- <script src="./scripts/cards.js"></script>
-<script src="./scripts/index.js" defer></script> -->
 
   <template id="card-template">
     <li class="places__item card">
@@ -100,7 +122,10 @@
       <div class="card__description">
         <h2 class="card__title">
         </h2>
-        <button type="button" class="card__like-button"></button>
+        <div class="card__like-container">
+          <button type="button" class="card__like-button"></button>
+          <div class="card__like-counter"></div>
+        </div>
       </div>
     </li>
   </template>

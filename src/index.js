@@ -1,43 +1,15 @@
-import { addCard, deleteCard, likeCard } from './components/card'
-import { initialCards } from './components/cards'
+import {
+	addNewCard,
+	deleteCard,
+	editAvatar,
+	editedUserData,
+	getDataUser,
+	getInitialCards,
+} from './components/api'
+import { addCard } from './components/card'
 import { closeModal, openModal } from './components/modal'
 import { clearValidation, enableValidation } from './components/validation'
 import './pages/index.css'
-
-const cardList = document.querySelector('.places__list')
-const cardTemplate = document.querySelector('#card-template').content
-
-// переменные для формы редактирования профиля
-const editPopup = document.querySelector('.popup_type_edit')
-const editButton = document.querySelector('.profile__edit-button')
-const profileTitle = document.querySelector('.profile__title')
-const profileDescription = document.querySelector('.profile__description')
-
-const formEditProfile = document.querySelector('form[name="edit-profile"]')
-const nameInput = formEditProfile.querySelector('.popup__input_type_name')
-const jobInput = formEditProfile.querySelector('.popup__input_type_description')
-
-const form = document.querySelector('.popup__form')
-const formInput = form.querySelector('.popup__input')
-// const formError = form.querySelector(`.${formInput.id}-error`)
-
-// переменные для формы добавления новой карточки
-const addCardPopup = document.querySelector('.popup_type_new-card')
-const addButton = document.querySelector('.profile__add-button')
-
-const formNewPlace = document.querySelector('form[name="new-place"]')
-const namePlaceInput = formNewPlace.querySelector(
-	'.popup__input_type_card-name'
-)
-const linkInput = formNewPlace.querySelector('.popup__input_type_url')
-
-// переменные для открытия попапа с картинкой
-const modalTypeImg = document.querySelector('.popup_type_image')
-const modalImg = modalTypeImg.querySelector('.popup__image')
-const modalCaption = modalTypeImg.querySelector('.popup__caption')
-
-// все кнопки закрытия попапов
-const closeButtons = document.querySelectorAll('.popup__close')
 
 // объект с настройками валидации
 const validationConfig = {
@@ -49,40 +21,104 @@ const validationConfig = {
 	errorClass: 'popup__error_visible',
 }
 
-// включение валидации всех форм
-enableValidation(validationConfig)
+const cardList = document.querySelector('.places__list')
+const cardTemplate = document.querySelector('#card-template').content
+const saveButton = document.querySelector('.popup__button')
+let myId
 
-// getInitialCards()
-// getIdUsers()
-// addNewCard()
-// editedUserData()
+// переменные для аватарки
+const profileImage = document.querySelector('.profile__image')
+const avatarPopup = document.querySelector('.popup_type_avatar')
+const formAvatar = document.querySelector('form[name="avatar"]')
+const avatarInput = formAvatar.querySelector('.popup__input_type_avatar')
 
-// ФОРМА РЕДАКТИРОВАНИЯ ПРОФИЛЯ
-// функция-обработчик события открытия модального окна для редактирования профиля
-editButton.addEventListener('click', evt => {
+profileImage.addEventListener('click', evt => {
 	evt.stopPropagation()
-	clearValidation(formEditProfile, validationConfig)
-	nameInput.value = profileTitle.textContent
-	jobInput.value = profileDescription.textContent
-	openModal(editPopup)
+	clearValidation(formAvatar, validationConfig)
+	openModal(avatarPopup)
 })
+formAvatar.addEventListener('submit', handleFormAvatarSubmit)
 
-// обработчик отправки формы редактирования профиля, хотя пока она никуда отправляться не будет
-function handleFormEditSubmit(evt) {
+function handleFormAvatarSubmit(evt) {
 	evt.preventDefault()
-	// clearValidation(formEditProfile, validationConfig);
-	const nameValue = nameInput.value
-	const descriptionValue = jobInput.value
+	renderLoading(true, saveButton)
 
-	profileTitle.textContent = nameValue
-	profileDescription.textContent = descriptionValue
-	closeModal(editPopup)
-	formEditProfile.reset()
+	const avatarLink = {
+		avatar: avatarInput.value,
+	}
+
+	editAvatar(avatarLink)
+		.then(data => {
+			renderAvatar(data)
+			closeModal(avatarPopup)
+		})
+		.catch(err => console.log(err))
+		.finally(() => renderLoading(false, saveButton))
 }
 
+// загружаем аватар на основе данных с  сервера
+function renderAvatar(data) {
+	profileImage.style.backgroundImage = `url(${data.avatar})`
+}
+
+// <---------------------------------------------------->
+
+// переменные для формы редактирования профиля
+const editPopup = document.querySelector('.popup_type_edit')
+const editButton = document.querySelector('.profile__edit-button')
+const profileTitle = document.querySelector('.profile__title')
+const profileDescription = document.querySelector('.profile__description')
+
+const formEditProfile = document.querySelector('form[name="edit-profile"]')
+const nameInput = formEditProfile.querySelector('.popup__input_type_name')
+const jobInput = formEditProfile.querySelector('.popup__input_type_description')
+
+editButton.addEventListener('click', openModalEditProfile)
 formEditProfile.addEventListener('submit', handleFormEditSubmit)
 
-// ФОРМА СОЗДАНИЯ НОВОЙ КАРТОЧКИ
+function openModalEditProfile() {
+	nameInput.value = profileTitle.textContent
+	jobInput.value = profileDescription.textContent
+	clearValidation(formEditProfile, validationConfig)
+	openModal(editPopup)
+}
+
+function handleFormEditSubmit(evt) {
+	evt.preventDefault()
+	renderLoading(true, saveButton)
+
+	const updateProfileData = {
+		name: nameInput.value,
+		about: jobInput.value,
+	}
+	editedUserData(updateProfileData)
+		.then(userData => {
+			renderUserData(userData)
+			closeModal(editPopup)
+		})
+		.catch(err => console.log(err))
+		.finally(() => renderLoading(false, saveButton))
+}
+
+// заполняем профиль на основе данных с сервера
+function renderUserData(userData) {
+	profileTitle.textContent = userData.name
+	profileDescription.textContent = userData.about
+	renderAvatar(userData)
+}
+
+// <--------------------------------------------------->
+
+// переменные для формы добавления новой карточки
+const addCardPopup = document.querySelector('.popup_type_new-card')
+const addButton = document.querySelector('.profile__add-button')
+
+const formNewPlace = document.querySelector('form[name="new-place"]')
+const namePlaceInput = formNewPlace.querySelector(
+	'.popup__input_type_card-name'
+)
+const linkInput = formNewPlace.querySelector('.popup__input_type_url')
+
 // слушатель кнопки открытия попапа для добавления новой карточки
 addButton.addEventListener('click', evt => {
 	evt.stopPropagation()
@@ -90,29 +126,47 @@ addButton.addEventListener('click', evt => {
 	openModal(addCardPopup)
 })
 
-// функция добавления новой карточки в начало страницы
-function handleImgSubmit(evt, ul, template) {
-	evt.preventDefault()
-	const namePlaceValue = namePlaceInput.value
-	const linkValue = linkInput.value
-
-	const newCardObj = {
-		name: namePlaceValue,
-		link: linkValue,
-	}
-	ul.prepend(addCard(template, newCardObj, deleteCard, likeCard, openImgModal))
-}
-
 formNewPlace.addEventListener('submit', evt => {
 	evt.stopPropagation()
-	handleImgSubmit(evt, cardList, cardTemplate)
+	handleNewCardSubmit(evt)
 	closeModal(addCardPopup)
 	document.querySelector('.popup__button').disabled = true
 	clearValidation(formNewPlace, validationConfig)
 	formNewPlace.reset()
 })
 
-// функция открытия модального окна изображения карточки.
+// функция добавления новой карточки в начало страницы
+function handleNewCardSubmit(evt) {
+	evt.preventDefault()
+	renderLoading(true, saveButton)
+
+	const namePlaceValue = namePlaceInput.value
+	const linkValue = linkInput.value
+
+	const newCardData = {
+		name: namePlaceValue,
+		link: linkValue,
+	}
+	addNewCard(newCardData)
+		.then(data => {
+			cardList.prepend(
+				addCard(myId, data, cardTemplate, openImgModal, openModalDeleteCard)
+			)
+		})
+		.catch(err => {
+			console.log(err)
+		})
+		.finally(() => renderLoading(false, saveButton))
+}
+
+// <----------------------------------------------------------->
+
+// переменные для открытия попапа с картинкой
+const modalTypeImg = document.querySelector('.popup_type_image')
+const modalImg = modalTypeImg.querySelector('.popup__image')
+const modalCaption = modalTypeImg.querySelector('.popup__caption')
+
+// функция открытия модального окна изображения карточки
 function openImgModal(img) {
 	modalImg.src = img.src
 	modalImg.alt = img.alt
@@ -120,7 +174,42 @@ function openImgModal(img) {
 	openModal(modalTypeImg)
 }
 
+// <---------------------------------------------------------->
+
+// переменные для попапа удаления карточки по корзине
+const deleteCardPopup = document.querySelector('.popup_type_delete-card')
+let cardDelete
+let cardElementDelete
+const deleteCardButton = document.querySelector('.popup__button_delete-card')
+
+// функция открытия попапа для удаления карточки
+function openModalDeleteCard(card, cardElement) {
+	cardDelete = card
+	cardElementDelete = cardElement
+	openModal(deleteCardPopup)
+}
+
+// функция обработчик удаления карточки
+function handleDeleteCard(evt, card, cardElement) {
+	evt.preventDefault()
+	deleteCard(card)
+		.then(() => cardElement.remove())
+		.catch(err => console.log(err))
+}
+
+// удаление карточки по кнопке согласия "да"
+deleteCardButton.addEventListener('click', evt => {
+	evt.stopPropagation()
+	handleDeleteCard(evt, cardDelete, cardElementDelete)
+	closeModal(deleteCardPopup)
+
+})
+
+// <--------------------------------------------------->
 // ЗАКРЫТИЕ ПОПАПОВ ПО КРЕСТИКУ
+// все кнопки закрытия попапов
+const closeButtons = document.querySelectorAll('.popup__close')
+
 closeButtons.forEach(button => {
 	button.addEventListener('click', evt => {
 		const popup = evt.target.closest('.popup')
@@ -128,8 +217,35 @@ closeButtons.forEach(button => {
 	})
 })
 
-initialCards.forEach(item => {
-	cardList.append(
-		addCard(cardTemplate, item, deleteCard, likeCard, openImgModal)
-	)
-})
+// отображение загрузки
+function renderLoading(isLoading, button) {
+	if (isLoading) {
+		button.textContent = 'Сохранение...'
+	} else {
+		button.textContent = 'Сохранить'
+	}
+}
+
+// функция отрисовки всех карточек на странице
+function renderCards(initialCards) {
+	initialCards.forEach(cardData => {
+		cardList.append(
+			addCard(myId, cardData, cardTemplate, openImgModal, openModalDeleteCard)
+		)
+	})
+}
+
+// включение валидации всех форм
+enableValidation(validationConfig)
+
+// когда оба запроса будут выполнены, отрисуются карточки
+Promise.all([getInitialCards(), getDataUser()])
+	.then(([cards, userData]) => {
+		// id нужен для проверки на свой лайк и корзины
+		myId = userData._id
+		renderCards(cards)
+		renderUserData(userData)
+	})
+	.catch(err => {
+		console.log(err)
+	})

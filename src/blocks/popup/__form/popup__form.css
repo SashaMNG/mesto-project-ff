@@ -3,12 +3,11 @@
 }
 
 .popup__label {
-	height: 46px;
+	block-size: 64px;
 	position: relative;
 	display: flex;
 	flex-direction: column;
 	border: none;
-	margin-bottom: 10px;
 }
 
 .popup__label:last-of-type {

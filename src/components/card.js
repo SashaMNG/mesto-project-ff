@@ -1,4 +1,6 @@
-function addCard(cardTemplate, card, deleteCard, likeCard, openImgModal) {
+import { deleteLikeCard, likeCard } from './api'
+
+function addCard(myId, card, cardTemplate, openImgModal, openModalDeleteCard) {
 	const cardElement = cardTemplate
 		.querySelector('.places__item')
 		.cloneNode(true)
@@ -14,24 +16,47 @@ function addCard(cardTemplate, card, deleteCard, likeCard, openImgModal) {
 	})
 
 	const deleteButton = cardElement.querySelector('.card__delete-button')
-	deleteButton.addEventListener('click', evt => {
-		deleteCard(cardElement)
-	})
+
+	if (card.owner._id === myId) {
+		deleteButton.addEventListener('click', evt => {
+			evt.stopPropagation()
+			openModalDeleteCard(card, cardElement)
+		})
+	} else {
+		deleteButton.remove()
+	}
+
+	const countLikes = arrLikes => {
+		const likeCounter = cardElement.querySelector('.card__like-counter')
+		likeCounter.textContent = arrLikes.length
+	}
 
 	const likeButton = cardElement.querySelector('.card__like-button')
 	likeButton.addEventListener('click', evt => {
-		likeCard(likeButton)
+		handleLike(evt.target, card._id, countLikes)
 	})
 
+	countLikes(card.likes)
+	
 	return cardElement
 }
 
-function deleteCard(el) {
-	el.remove()
+function handleLike(button, cardId, countLikes) {
+	if (!button.classList.contains('card__like-button_is-active')) {
+		likeCard(cardId)
+			.then(cardData => {
+				countLikes(cardData.likes)
+				button.classList.add('card__like-button_is-active')
+			})
+			.catch(err => console.log(err))
+	} else {
+		deleteLikeCard(cardId)
+			.then(cardData => {
+				countLikes(cardData.likes)
+				button.classList.remove('card__like-button_is-active')
+			})
+			.catch(err => console.log(err))
+	}
 }
 
-function likeCard(button) {
-	button.classList.toggle('card__like-button_is-active')
-}
-
-export { addCard, deleteCard, likeCard }
+export { addCard }

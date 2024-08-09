@@ -1,4 +1,6 @@
 import {
+	likeCard,
+	deleteLikeCard,
 	addNewCard,
 	deleteCard,
 	editAvatar,
@@ -150,7 +152,7 @@ function handleNewCardSubmit(evt) {
 	addNewCard(newCardData)
 		.then(data => {
 			cardList.prepend(
-				addCard(myId, data, cardTemplate, openImgModal, openModalDeleteCard)
+				addCard(myId, data, cardTemplate, openImgModal, openModalDeleteCard, handleLike)
 			)
 		})
 		.catch(err => {
@@ -205,6 +207,20 @@ deleteCardButton.addEventListener('click', evt => {
 
 })
 
+
+// функция для постановки и снятия лайка
+function handleLike(button, cardId, countLikes) {
+	const likeMethod = button.classList.contains('card__like-button_is-active')
+		? deleteLikeCard
+		: likeCard
+	likeMethod(cardId)
+		.then(cardData => {
+			countLikes(cardData.likes)
+			button.classList.toggle('card__like-button_is-active')
+		})
+		.catch(err => console.log(err))
+}
+
 // <--------------------------------------------------->
 // ЗАКРЫТИЕ ПОПАПОВ ПО КРЕСТИКУ
 // все кнопки закрытия попапов
@@ -230,7 +246,7 @@ function renderLoading(isLoading, button) {
 function renderCards(initialCards) {
 	initialCards.forEach(cardData => {
 		cardList.append(
-			addCard(myId, cardData, cardTemplate, openImgModal, openModalDeleteCard)
+			addCard(myId, cardData, cardTemplate, openImgModal, openModalDeleteCard, handleLike)
 		)
 	})
 }

@@ -1,6 +1,11 @@
-import { deleteLikeCard, likeCard } from './api'
-
-function addCard(myId, card, cardTemplate, openImgModal, openModalDeleteCard) {
+function addCard(
+	myId,
+	card,
+	cardTemplate,
+	openImgModal,
+	openModalDeleteCard,
+	handleLike
+) {
 	const cardElement = cardTemplate
 		.querySelector('.places__item')
 		.cloneNode(true)
@@ -37,26 +42,8 @@ function addCard(myId, card, cardTemplate, openImgModal, openModalDeleteCard) {
 	})
 
 	countLikes(card.likes)
-	
-	return cardElement
-}
 
-function handleLike(button, cardId, countLikes) {
-	if (!button.classList.contains('card__like-button_is-active')) {
-		likeCard(cardId)
-			.then(cardData => {
-				countLikes(cardData.likes)
-				button.classList.add('card__like-button_is-active')
-			})
-			.catch(err => console.log(err))
-	} else {
-		deleteLikeCard(cardId)
-			.then(cardData => {
-				countLikes(cardData.likes)
-				button.classList.remove('card__like-button_is-active')
-			})
-			.catch(err => console.log(err))
-	}
+	return cardElement
 }
 
 export { addCard }

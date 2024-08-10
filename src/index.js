@@ -1,12 +1,12 @@
 import {
-	likeCard,
-	deleteLikeCard,
 	addNewCard,
 	deleteCard,
+	deleteLikeCard,
 	editAvatar,
 	editedUserData,
 	getDataUser,
 	getInitialCards,
+	likeCard,
 } from './components/api'
 import { addCard } from './components/card'
 import { closeModal, openModal } from './components/modal'
@@ -25,7 +25,7 @@ const validationConfig = {
 
 const cardList = document.querySelector('.places__list')
 const cardTemplate = document.querySelector('#card-template').content
-const saveButton = document.querySelector('.popup__button')
+// const saveButton = document.querySelector('.popup__button')
 let myId
 
 // переменные для аватарки
@@ -43,7 +43,8 @@ formAvatar.addEventListener('submit', handleFormAvatarSubmit)
 
 function handleFormAvatarSubmit(evt) {
 	evt.preventDefault()
-	renderLoading(true, saveButton)
+	const button = evt.target.querySelector('.popup__button')
+  renderLoading(true, button)
 
 	const avatarLink = {
 		avatar: avatarInput.value,
@@ -55,7 +56,7 @@ function handleFormAvatarSubmit(evt) {
 			closeModal(avatarPopup)
 		})
 		.catch(err => console.log(err))
-		.finally(() => renderLoading(false, saveButton))
+		.finally(() => renderLoading(false, button))
 }
 
 // загружаем аватар на основе данных с  сервера
@@ -87,7 +88,8 @@ function openModalEditProfile() {
 
 function handleFormEditSubmit(evt) {
 	evt.preventDefault()
-	renderLoading(true, saveButton)
+	const button = evt.target.querySelector('.popup__button')
+  renderLoading(true, button)
 
 	const updateProfileData = {
 		name: nameInput.value,
@@ -99,7 +101,7 @@ function handleFormEditSubmit(evt) {
 			closeModal(editPopup)
 		})
 		.catch(err => console.log(err))
-		.finally(() => renderLoading(false, saveButton))
+		.finally(() => renderLoading(false, button))
 }
 
 // заполняем профиль на основе данных с сервера
@@ -131,16 +133,15 @@ addButton.addEventListener('click', evt => {
 formNewPlace.addEventListener('submit', evt => {
 	evt.stopPropagation()
 	handleNewCardSubmit(evt)
-	closeModal(addCardPopup)
 	document.querySelector('.popup__button').disabled = true
 	clearValidation(formNewPlace, validationConfig)
-	formNewPlace.reset()
 })
 
 // функция добавления новой карточки в начало страницы
 function handleNewCardSubmit(evt) {
 	evt.preventDefault()
-	renderLoading(true, saveButton)
+	const button = evt.target.querySelector('.popup__button')
+  renderLoading(true, button)
 
 	const namePlaceValue = namePlaceInput.value
 	const linkValue = linkInput.value
@@ -152,13 +153,22 @@ function handleNewCardSubmit(evt) {
 	addNewCard(newCardData)
 		.then(data => {
 			cardList.prepend(
-				addCard(myId, data, cardTemplate, openImgModal, openModalDeleteCard, handleLike)
+				addCard(
+					myId,
+					data,
+					cardTemplate,
+					openImgModal,
+					openModalDeleteCard,
+					handleLike
+				)
 			)
+			closeModal(addCardPopup)
+			formNewPlace.reset()
 		})
 		.catch(err => {
 			console.log(err)
 		})
-		.finally(() => renderLoading(false, saveButton))
+		.finally(() => renderLoading(false, button))
 }
 
 // <----------------------------------------------------------->
@@ -204,9 +214,7 @@ deleteCardButton.addEventListener('click', evt => {
 	evt.stopPropagation()
 	handleDeleteCard(evt, cardDelete, cardElementDelete)
 	closeModal(deleteCardPopup)
-
 })
-
 
 // функция для постановки и снятия лайка
 function handleLike(button, cardId, countLikes) {
@@ -235,18 +243,21 @@ closeButtons.forEach(button => {
 
 // отображение загрузки
 function renderLoading(isLoading, button) {
-	if (isLoading) {
-		button.textContent = 'Сохранение...'
-	} else {
-		button.textContent = 'Сохранить'
-	}
+	button.textContent = isLoading ? 'Сохранение...' : 'Сохранить'
 }
 
 // функция отрисовки всех карточек на странице
 function renderCards(initialCards) {
 	initialCards.forEach(cardData => {
 		cardList.append(
-			addCard(myId, cardData, cardTemplate, openImgModal, openModalDeleteCard, handleLike)
+			addCard(
+				myId,
+				cardData,
+				cardTemplate,
+				openImgModal,
+				openModalDeleteCard,
+				handleLike
+			)
 		)
 	})
 }
